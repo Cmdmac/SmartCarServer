@@ -1,11 +1,23 @@
 <template>
 <!--  <img alt="Vue logo" src="./assets/logo.png">-->
 <!--  <HelloWorld msg="Welcome to Your Vue.js App"/>-->
-  <ElButton @click="onForward">前进</ElButton>
-  <ElButton @click="onBackward">后退</ElButton>
-  <ElButton @click="onTurnLeft">左转</ElButton>
-  <ElButton @click="onTurnRight">右转</ElButton>
-  <el-button>test</el-button>
+  <el-row>
+    <ElButton @click="onForward">前进</ElButton>
+    <ElButton @click="onBackward">后退</ElButton>
+    <ElButton @click="onTurnLeft">左转</ElButton>
+    <ElButton @click="onTurnRight">右转</ElButton>
+  </el-row>
+  <el-row>
+    <el-input v-model="msg" clearable style="width: 200px" />
+    <el-button @click="sendTollm" >test</el-button>
+  </el-row>
+  <el-row>
+    <el-text class="mx-1">content:{{content}}</el-text>
+  </el-row>
+  <template>
+
+</template>
+
 </template>
 
 <script>
@@ -18,7 +30,9 @@ export default {
   },
   data() {
     return {
-      socket: null
+      socket: null,
+      msg: "", 
+      content: ""
     }
   },
   methods: {
@@ -34,18 +48,22 @@ export default {
     onTurnRight() {
       this.socket.send(JSON.stringify({command: 3}));
     },
+    sendTollm() {
+      this.socket.send(this.msg);
+    }
   },
   created() {
-    this.socket = new WebSocket('ws://localhost:3000/web');
+    this.socket = new WebSocket('ws://localhost:3000/llm');
 
     this.socket.onopen = () => {
       console.log('WebSocket 连接已打开');
     };
 
     this.socket.onmessage = (event) => {
-      this.message = event.data;
+      // this.msg = event.data;
       console.log(event.data);
-      console.log(JSON.stringify(event.data.command))
+      this.content += event.data;
+      // console.log(JSON.stringify(event.data.command))
     };
 
     this.socket.onerror = (error) => {
